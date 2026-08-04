@@ -3,7 +3,13 @@ const mongoose = require("mongoose");
 const voterSchema = new mongoose.Schema(
   {
     fullName: { type: String, required: true, trim: true },
-    voterId: { type: String, required: true, unique: true, trim: true }, // mock govt ID (e.g. Aadhaar-style number)
+    voterId: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      match: [/^\d{12}$/, "Voter ID must be exactly 12 digits"],
+    }, // mock govt ID, Aadhaar-style 12-digit number
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     phone: { type: String, required: true, trim: true },
     constituency: { type: String, required: true, trim: true },

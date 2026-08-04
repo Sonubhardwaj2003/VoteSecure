@@ -1,0 +1,11 @@
+# Personal interview-prep notes — not meant for the public repo
+PROJECT_EXPLANATION.md
+
+# Safety net in case anything is ever run from the repo root
+node_modules/
+build/
+dist/
+.env
+.env.local
+.DS_Store
+*.log

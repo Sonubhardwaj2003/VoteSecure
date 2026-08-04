@@ -1,4 +1,7 @@
+import * as tf from "@tensorflow/tfjs";
 import * as faceapi from "face-api.js";
+console.log("TensorFlow Version:", tf.version.tfjs);
+console.log("Backend:", tf.getBackend());
 
 const MODEL_URL = process.env.PUBLIC_URL + "/models";
 
@@ -8,20 +11,34 @@ let modelsLoaded = false;
 // (e.g. in a useEffect on the page that needs the camera).
 export const loadFaceModels = async () => {
   if (modelsLoaded) return;
+
+  await tf.ready();
+
+  if (tf.findBackend("webgl")) {
+    await tf.setBackend("webgl");
+  } else {
+    await tf.setBackend("cpu");
+  }
+
+  console.log("Backend:", tf.getBackend());
+
   await Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
     faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
     faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
   ]);
+
   modelsLoaded = true;
 };
 
 // Detects a single face in a <video> element and returns:
 // - descriptor: 128-length Float32Array (converted to plain array for JSON)
 // - landmarks: for liveness/blink checks
+// This is the "expensive" call (computes the full recognition descriptor) -
+// only use it once, at the moment of actual capture.
 export const detectFaceFromVideo = async (videoEl) => {
   const detection = await faceapi
-    .detectSingleFace(videoEl, new faceapi.TinyFaceDetectorOptions())
+    .detectSingleFace(videoEl, new faceapi.TinyFaceDetectorOptions({ inputSize: 320 }))
     .withFaceLandmarks()
     .withFaceDescriptor();
 
@@ -31,6 +48,20 @@ export const detectFaceFromVideo = async (videoEl) => {
     descriptor: Array.from(detection.descriptor),
     landmarks: detection.landmarks,
   };
+};
+
+// Lightweight version used for the liveness/blink polling loop: skips the
+// expensive descriptor computation entirely (we only need eye landmarks
+// here) and uses a smaller detector input size for faster inference. This
+// is what makes blink detection feel near-instant instead of laggy.
+export const detectLandmarksFromVideo = async (videoEl) => {
+  const detection = await faceapi
+    .detectSingleFace(videoEl, new faceapi.TinyFaceDetectorOptions({ inputSize: 224 }))
+    .withFaceLandmarks();
+
+  if (!detection) return null;
+
+  return { landmarks: detection.landmarks };
 };
 
 // --- Basic liveness: Eye Aspect Ratio (EAR) based blink detection ---

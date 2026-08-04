@@ -4,6 +4,18 @@ const generateToken = require("../utils/generateToken");
 const { generateOTPCode, sendOTPEmail } = require("../utils/sendOTP");
 const { isFaceMatch } = require("../utils/faceMatch");
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PHONE_RE = /^[6-9]\d{9}$/;
+const VOTER_ID_RE = /^\d{12}$/; // exactly 12 digits, Aadhaar-style
+
+function calculateAge(dob) {
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) age--;
+  return age;
+}
+
 // @route POST /api/auth/register
 // Body: { fullName, voterId, email, phone, constituency, dateOfBirth, faceDescriptor }
 exports.registerVoter = async (req, res) => {
@@ -12,6 +24,31 @@ exports.registerVoter = async (req, res) => {
 
     if (!fullName || !voterId || !email || !phone || !constituency || !dateOfBirth || !faceDescriptor) {
       return res.status(400).json({ message: "All fields including a captured face are required" });
+    }
+    if (fullName.trim().length < 3) {
+      return res.status(400).json({ message: "Full name must be at least 3 characters" });
+    }
+    if (!VOTER_ID_RE.test(voterId.trim())) {
+      return res.status(400).json({ message: "Voter ID must be exactly 12 digits" });
+    }
+    if (!EMAIL_RE.test(email.trim())) {
+      return res.status(400).json({ message: "Enter a valid email address" });
+    }
+    if (!PHONE_RE.test(phone.trim())) {
+      return res.status(400).json({ message: "Enter a valid 10-digit mobile number" });
+    }
+    if (constituency.trim().length < 2) {
+      return res.status(400).json({ message: "Constituency name looks too short" });
+    }
+    const dob = new Date(dateOfBirth);
+    if (Number.isNaN(dob.getTime()) || dob > new Date()) {
+      return res.status(400).json({ message: "Enter a valid date of birth" });
+    }
+    if (calculateAge(dob) < 18) {
+      return res.status(400).json({ message: "You must be at least 18 years old to register" });
+    }
+    if (!Array.isArray(faceDescriptor) || faceDescriptor.length !== 128) {
+      return res.status(400).json({ message: "Face capture looks invalid — please retake it" });
     }
 
     const existing = await Voter.findOne({ $or: [{ voterId }, { email }] });

@@ -20,6 +20,12 @@ exports.addCandidate = async (req, res) => {
     if (!name || !party || !constituency) {
       return res.status(400).json({ message: "name, party, and constituency are required" });
     }
+    if (name.trim().length < 3) {
+      return res.status(400).json({ message: "Candidate name must be at least 3 characters" });
+    }
+    if (constituency.trim().length < 2) {
+      return res.status(400).json({ message: "Constituency name looks too short" });
+    }
     const candidate = await Candidate.create({ name, party, symbol, constituency });
     res.status(201).json(candidate);
   } catch (err) {
