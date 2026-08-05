@@ -130,6 +130,36 @@ exports.loginWithFace = async (req, res) => {
   }
 };
 
+// @route POST /api/auth/login/resend-otp
+// Re-sends a fresh OTP without requiring another face scan. Still re-checks
+// verified/hasVoted so the resend button can't be abused to keep messaging
+// a voter who's no longer eligible.
+exports.resendOtp = async (req, res) => {
+  try {
+    const { voterId } = req.body;
+    if (!voterId) return res.status(400).json({ message: "voterId is required" });
+
+    const voter = await Voter.findOne({ voterId });
+    if (!voter) return res.status(404).json({ message: "Voter not found" });
+    if (!voter.isVerified) {
+      return res.status(403).json({ message: "Your registration is not yet verified by admin" });
+    }
+    if (voter.hasVoted) {
+      return res.status(403).json({ message: "You have already cast your vote" });
+    }
+
+    const code = generateOTPCode();
+    await Otp.deleteMany({ voterId });
+    await Otp.create({ voterId, code });
+    await sendOTPEmail(voter.email, code);
+
+    res.json({ message: "A new OTP has been sent to your email.", maskedEmail: maskEmail(voter.email) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error while resending OTP", error: err.message });
+  }
+};
+
 // @route POST /api/auth/login/verify-otp
 // Step 2 of login: verify OTP, issue JWT
 // Body: { voterId, code }
@@ -146,7 +176,7 @@ exports.verifyOtp = async (req, res) => {
 
     await Otp.deleteMany({ voterId }); // OTP is single-use
 
-    const token = generateToken({ id: voter._id, voterId: voter.voterId, role: "voter" }, "15m");
+    const token = generateToken({ id: voter._id, voterId: voter.voterId, role: "voter" }, "2h");
 
     res.json({
       message: "Login successful",

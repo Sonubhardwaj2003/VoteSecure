@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { CreditCard, KeyRound, ScanFace, MailCheck, ShieldCheck, Loader2, Sparkles } from "lucide-react";
+import {
+  CreditCard,
+  KeyRound,
+  ScanFace,
+  MailCheck,
+  ShieldCheck,
+  Loader2,
+  Sparkles,
+} from "lucide-react";
 import FaceCapture from "../components/FaceCapture";
 import TextInput from "../components/TextInput";
 import Alert from "../components/Alert";
@@ -27,6 +35,8 @@ export default function Login() {
   const [message, setMessage] = useMessage();
   const [maskedEmail, setMaskedEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resending, setResending] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -55,12 +65,18 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const res = await api.post("/auth/login/face", { voterId, faceDescriptor: descriptor });
+      const res = await api.post("/auth/login/face", {
+        voterId,
+        faceDescriptor: descriptor,
+      });
       setMaskedEmail(res.data.maskedEmail);
       setMessage(res.data.message);
+      setResendCooldown(30);
       setStep("otp");
     } catch (err) {
-      setMessage(err.response?.data?.message || "Face verification failed", { persist: true });
+      setMessage(err.response?.data?.message || "Face verification failed", {
+        persist: true,
+      });
     } finally {
       setLoading(false);
     }
@@ -75,37 +91,68 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const res = await api.post("/auth/login/verify-otp", { voterId, code: otp });
+      const res = await api.post("/auth/login/verify-otp", {
+        voterId,
+        code: otp,
+      });
       localStorage.setItem("voterToken", res.data.token);
       localStorage.setItem("voter", JSON.stringify(res.data.voter));
       navigate("/vote");
     } catch (err) {
-      setMessage(err.response?.data?.message || "OTP verification failed", { persist: true });
+      setMessage(err.response?.data?.message || "OTP verification failed", {
+        persist: true,
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = setInterval(() => setResendCooldown((c) => c - 1), 1000);
+    return () => clearInterval(timer);
+  }, [resendCooldown]);
+
+  const handleResendOtp = async () => {
+    setResending(true);
+    try {
+      const res = await api.post("/auth/login/resend-otp", { voterId });
+      setMaskedEmail(res.data.maskedEmail);
+      setMessage(res.data.message);
+      setResendCooldown(30);
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Could not resend OTP", {
+        persist: true,
+      });
+    } finally {
+      setResending(false);
+    }
+  };
   return (
     <div>
       {/* Hero */}
       <div className="relative overflow-hidden border-b border-slate-200 bg-gradient-to-b from-brand-50 via-white to-slate-50">
         <div className="blob -left-20 -top-20 h-72 w-72 animate-float bg-brand-300" />
-        <div className="blob -right-16 top-10 h-64 w-64 animate-float bg-indigo-300" style={{ animationDelay: "2s" }} />
+        <div
+          className="blob -right-16 top-10 h-64 w-64 animate-float bg-indigo-300"
+          style={{ animationDelay: "2s" }}
+        />
         <div className="relative z-10 mx-auto max-w-3xl px-4 py-12 text-center sm:px-6 sm:py-16">
           <span className="badge-slate mb-4 inline-flex items-center gap-1.5">
             <Sparkles className="h-3 w-3 text-brand-600" />
             Every identity verified, every vote counted
           </span>
           <h1 className="text-3xl font-extrabold tracking-tight text-ink-900 sm:text-4xl">
-            Your Vote. <span className="text-brand-600">Verified.</span> Secured.
+            Your Vote. <span className="text-brand-600">Verified.</span>{" "}
+            Secured.
           </h1>
           <p className="mx-auto mt-3 max-w-xl text-sm text-slate-600 sm:text-base">
-            VoteSecure brings elections to anyone with a camera and a browser — no
-            travel, no queues, no impersonation. Every voter proves who they are
-            with a live face check and a one-time email code before their vote is
-            ever counted. Inspired by real-world remote-voting efforts like
-            India's Remote Voting Machine proposal and Estonia's i-Voting system.
+            VoteSecure brings elections to anyone with a camera and a browser —
+            no travel, no queues, no impersonation. Every voter proves who they
+            are with a live face check and a one-time email code before their
+            vote is ever counted. Inspired by real-world remote-voting efforts
+            like India's Remote Voting Machine proposal and Estonia's i-Voting
+            system.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-2">
             {trustBadges.map((b) => (
@@ -148,7 +195,10 @@ export default function Login() {
                   inputMode="numeric"
                   maxLength={12}
                 />
-                <FaceCapture buttonLabel="Verify Face" onCapture={handleFaceCapture} />
+                <FaceCapture
+                  buttonLabel="Verify Face"
+                  onCapture={handleFaceCapture}
+                />
                 {loading && (
                   <p className="flex items-center gap-2 text-sm text-slate-500">
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -161,7 +211,8 @@ export default function Login() {
             {step === "otp" && (
               <form onSubmit={handleVerifyOtp} className="flex flex-col gap-4">
                 <p className="text-sm text-slate-600">
-                  Enter the 6-digit OTP sent to <span className="font-semibold">{maskedEmail}</span>
+                  Enter the 6-digit OTP sent to{" "}
+                  <span className="font-semibold">{maskedEmail}</span>
                 </p>
                 <TextInput
                   label="OTP Code"
@@ -169,7 +220,9 @@ export default function Login() {
                   placeholder="6-digit OTP"
                   value={otp}
                   onChange={(e) => {
-                    const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 6);
+                    const digitsOnly = e.target.value
+                      .replace(/\D/g, "")
+                      .slice(0, 6);
                     setOtp(digitsOnly);
                     if (otpTouched) setOtpError(validators.otp(digitsOnly));
                   }}
@@ -183,9 +236,25 @@ export default function Login() {
                   maxLength={6}
                   className="[&_input]:text-center [&_input]:text-lg [&_input]:tracking-[0.5em]"
                 />
-                <button type="submit" disabled={loading} className="btn-primary">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="btn-primary"
+                >
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                   {loading ? "Verifying…" : "Verify & Login"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={resendCooldown > 0 || resending}
+                  className="btn-secondary"
+                >
+                  {resending && <Loader2 className="h-4 w-4 animate-spin" />}
+                  {resendCooldown > 0
+                    ? `Resend OTP in ${resendCooldown}s`
+                    : "Resend OTP"}
                 </button>
               </form>
             )}
