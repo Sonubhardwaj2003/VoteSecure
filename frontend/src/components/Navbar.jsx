@@ -45,7 +45,6 @@ export default function Navbar() {
   ];
   const adminLinks = [
     { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
-    { to: "/vote", label: "Cast Vote", icon: VoteIcon },
     { to: "/results", label: "Results", icon: BarChart3 },
   ];
   const primaryLinks = isVoter
