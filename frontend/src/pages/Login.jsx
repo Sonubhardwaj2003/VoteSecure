@@ -9,6 +9,7 @@ import {
   Loader2,
   Sparkles,
 } from "lucide-react";
+import { notifyAuthChange } from "../utils/authEvents";
 import FaceCapture from "../components/FaceCapture";
 import TextInput from "../components/TextInput";
 import Alert from "../components/Alert";
@@ -97,6 +98,7 @@ export default function Login() {
       });
       localStorage.setItem("voterToken", res.data.token);
       localStorage.setItem("voter", JSON.stringify(res.data.voter));
+      notifyAuthChange();
       navigate("/vote");
     } catch (err) {
       setMessage(err.response?.data?.message || "OTP verification failed", {
@@ -120,6 +122,9 @@ export default function Login() {
       setMaskedEmail(res.data.maskedEmail);
       setMessage(res.data.message);
       setResendCooldown(30);
+      setOtp("");            // <-- naya: purana OTP input clear karo
+      setOtpTouched(false);  // <-- naya: error message bhi hide ho jayega
+      setOtpError("");       // <-- naya
     } catch (err) {
       setMessage(err.response?.data?.message || "Could not resend OTP", {
         persist: true,

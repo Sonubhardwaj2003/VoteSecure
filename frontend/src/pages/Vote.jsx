@@ -20,7 +20,9 @@ export default function Vote() {
       .catch((err) => {
         if (err.response?.status === 401) {
           localStorage.removeItem("voter");
-          setMessage("Your session has expired. Please log in again.", { persist: true });
+          setMessage("Your session has expired. Please log in again.", {
+            persist: true,
+          });
         } else {
           setMessage("Could not load candidates", { persist: true });
         }
@@ -32,20 +34,27 @@ export default function Vote() {
   if (!voter) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center sm:px-6">
-        <p className="text-slate-600">Please log in first to view and cast your vote.</p>
+        <p className="text-slate-600">
+          {localStorage.getItem("adminToken")
+            ? "Admin accounts don't have a voter identity to cast a ballot with — this view is for registered voters only."
+            : "Please log in first to view and cast your vote."}
+        </p>
       </div>
     );
   }
 
   const handleVote = async (candidateId) => {
-    if (!window.confirm("Confirm your vote? This action cannot be undone.")) return;
+    if (!window.confirm("Confirm your vote? This action cannot be undone."))
+      return;
     setVotingId(candidateId);
     try {
       const res = await api.post("/vote/cast", { candidateId });
       setMessage(res.data.message, { persist: true });
       setVoted(true);
     } catch (err) {
-      setMessage(err.response?.data?.message || "Vote failed", { persist: true });
+      setMessage(err.response?.data?.message || "Vote failed", {
+        persist: true,
+      });
     } finally {
       setVotingId(null);
     }
@@ -56,8 +65,12 @@ export default function Vote() {
       <div className="card animate-fade-in">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 className="text-lg font-bold text-ink-900">Welcome, {voter.fullName}</h2>
-            <p className="text-sm text-slate-500">Constituency: {voter.constituency}</p>
+            <h2 className="text-lg font-bold text-ink-900">
+              Welcome, {voter.fullName}
+            </h2>
+            <p className="text-sm text-slate-500">
+              Constituency: {voter.constituency}
+            </p>
           </div>
           <span className="badge-slate">Voter ID: {voter.voterId}</span>
         </div>

@@ -12,6 +12,7 @@ import {
   Loader2,
   PlusCircle,
 } from "lucide-react";
+import { notifyAuthChange } from "../utils/authEvents";
 import api from "../utils/api";
 import Alert from "../components/Alert";
 import TextInput from "../components/TextInput";
@@ -74,6 +75,7 @@ export default function AdminDashboard() {
     try {
       const res = await api.post("/admin/login", login.values);
       localStorage.setItem("adminToken", res.data.token);
+      notifyAuthChange();
       setLoggedIn(true);
     } catch (err) {
       setMessage(err.response?.data?.message || "Login failed", { persist: true });
@@ -84,6 +86,7 @@ export default function AdminDashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem("adminToken");
+    notifyAuthChange();
     setLoggedIn(false);
     setVoters([]);
     login.reset();

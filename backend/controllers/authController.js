@@ -104,9 +104,9 @@ exports.loginWithFace = async (req, res) => {
     if (!voter.isVerified) {
       return res.status(403).json({ message: "Your registration is not yet verified by admin" });
     }
-    if (voter.hasVoted) {
-      return res.status(403).json({ message: "You have already cast your vote" });
-    }
+    // if (voter.hasVoted) {
+    //   return res.status(403).json({ message: "You have already cast your vote" });
+    // }
 
     const { match, distance, threshold } = isFaceMatch(voter.faceDescriptor, faceDescriptor);
     if (!match) {

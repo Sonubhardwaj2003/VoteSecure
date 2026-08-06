@@ -21,7 +21,7 @@ export default function App() {
             <Route
               path="/vote"
               element={
-                <RequireAuth allow="voter">
+                <RequireAuth allow="any">
                   <Vote />
                 </RequireAuth>
               }
