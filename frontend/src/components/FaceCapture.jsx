@@ -22,7 +22,10 @@ const STATUS_TEXT = {
  *  - onCapture(descriptorArray): called once a live face is captured successfully
  *  - buttonLabel: text for the capture button
  */
-export default function FaceCapture({ onCapture, buttonLabel = "Capture Face" }) {
+export default function FaceCapture({
+  onCapture,
+  buttonLabel = "Capture Face",
+}) {
   const videoRef = useRef(null);
   const [status, setStatus] = useState("loading-models");
   const [livenessConfirmed, setLivenessConfirmed] = useState(false);
@@ -70,7 +73,9 @@ export default function FaceCapture({ onCapture, buttonLabel = "Capture Face" })
         }, 120);
       } catch (err) {
         console.error(err);
-        setError("Could not access camera. Please allow camera permission and reload.");
+        setError(
+          "Could not access camera. Please allow camera permission and reload.",
+        );
         setStatus("error");
       }
     };
@@ -86,21 +91,36 @@ export default function FaceCapture({ onCapture, buttonLabel = "Capture Face" })
   const handleCapture = async () => {
     setError("");
     if (!livenessConfirmed) {
-      setError("Please blink naturally at the camera first, so we can confirm you're a live person.");
+      setError(
+        "Please blink naturally at the camera first, so we can confirm you're a live person.",
+      );
       return;
     }
+
     const result = await detectFaceFromVideo(videoRef.current);
-    if (!result) {
-      setError("No face detected. Please center your face in the frame and try again.");
+
+    if (!result || result.error === "no-face") {
+      setError(
+        "No face detected. Please center your face in the frame and try again.",
+      );
       return;
     }
+    if (result.error === "multiple-faces") {
+      setError(
+        `${result.count} faces detected in frame. Please make sure only YOU are visible to the camera and try again.`,
+      );
+      return;
+    }
+
     onCapture(result.descriptor);
   };
 
   const isBusy = status === "loading-models" || status === "starting-camera";
   const readyMessage =
     status === "ready" &&
-    (livenessConfirmed ? "Liveness confirmed — you may capture now." : "Please blink naturally…");
+    (livenessConfirmed
+      ? "Liveness confirmed — you may capture now."
+      : "Please blink naturally…");
 
   return (
     <div className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100 p-4">
@@ -128,7 +148,9 @@ export default function FaceCapture({ onCapture, buttonLabel = "Capture Face" })
         {status === "ready" && (
           <span
             className={`absolute right-2 top-2 flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold shadow-sm ${
-              livenessConfirmed ? "bg-emerald-500 text-white" : "bg-amber-400 text-ink-900"
+              livenessConfirmed
+                ? "bg-emerald-500 text-white"
+                : "bg-amber-400 text-ink-900"
             }`}
           >
             <span

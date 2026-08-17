@@ -36,14 +36,25 @@ export const loadFaceModels = async () => {
 // - landmarks: for liveness/blink checks
 // This is the "expensive" call (computes the full recognition descriptor) -
 // only use it once, at the moment of actual capture.
-export const detectFaceFromVideo = async (videoEl) => {
-  const detection = await faceapi
-    .detectSingleFace(videoEl, new faceapi.TinyFaceDetectorOptions({ inputSize: 320 }))
+// Full-quality detection used only at the moment of "Capture" (Login/Register).
+// Detects ALL faces in frame — not just the most confident one — so we can
+// reject the capture outright if more than one person is visible. Silently
+// picking "the most confident face" when two people are in frame is exactly
+// the bug this fixes.
+export const detectFaceFromVideo = async (video) => {
+  const detections = await faceapi
+    .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 }))
     .withFaceLandmarks()
-    .withFaceDescriptor();
+    .withFaceDescriptors();
 
-  if (!detection) return null;
+  if (detections.length === 0) {
+    return { error: "no-face" };
+  }
+  if (detections.length > 1) {
+    return { error: "multiple-faces", count: detections.length };
+  }
 
+  const [detection] = detections;
   return {
     descriptor: Array.from(detection.descriptor),
     landmarks: detection.landmarks,
