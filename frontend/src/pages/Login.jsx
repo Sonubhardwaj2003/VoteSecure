@@ -122,9 +122,9 @@ export default function Login() {
       setMaskedEmail(res.data.maskedEmail);
       setMessage(res.data.message);
       setResendCooldown(30);
-      setOtp("");            // <-- naya: purana OTP input clear karo
-      setOtpTouched(false);  // <-- naya: error message bhi hide ho jayega
-      setOtpError("");       // <-- naya
+      setOtp(""); // <-- naya: purana OTP input clear karo
+      setOtpTouched(false); // <-- naya: error message bhi hide ho jayega
+      setOtpError(""); // <-- naya
     } catch (err) {
       setMessage(err.response?.data?.message || "Could not resend OTP", {
         persist: true,
@@ -207,7 +207,8 @@ export default function Login() {
                 {loading && (
                   <p className="flex items-center gap-2 text-sm text-slate-500">
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    Checking face…
+                    Checking face &amp; sending OTP — this can take up to a
+                    minute if the server was idle.
                   </p>
                 )}
               </>
