@@ -75,7 +75,7 @@ export default function Results() {
                         </span>
                       )}
                       <p className="font-semibold text-ink-900">
-                        {c.name} <span className="font-normal text-slate-500">({c.party})</span>
+                        {c.name} <span className="font-normal text-slate-500">({c.party} · {c.symbol})</span>
                       </p>
                     </div>
                     <span className="text-sm font-bold text-brand-700">{c.voteCount} votes</span>

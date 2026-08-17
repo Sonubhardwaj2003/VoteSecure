@@ -25,11 +25,14 @@ const candidateSchema = {
   name: validators.requiredText("Candidate name"),
   party: validators.requiredText("Party"),
   constituency: validators.constituency,
+  symbol: validators.requiredText("Symbol"),
 };
-const emptyCandidate = { name: "", party: "", constituency: "" };
+const emptyCandidate = { name: "", party: "", constituency: "", symbol: "" };
 
 export default function AdminDashboard() {
-  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("adminToken"));
+  const [loggedIn, setLoggedIn] = useState(
+    !!localStorage.getItem("adminToken"),
+  );
   const [voters, setVoters] = useState([]);
   const [message, setMessage] = useMessage();
   const [loadingVoters, setLoadingVoters] = useState(false);
@@ -54,9 +57,13 @@ export default function AdminDashboard() {
           // Session expired or invalid — bounce back to the login screen
           // instead of showing a broken dashboard.
           setLoggedIn(false);
-          setMessage("Your session has expired. Please log in again.", { persist: true });
+          setMessage("Your session has expired. Please log in again.", {
+            persist: true,
+          });
         } else {
-          setMessage(err.response?.data?.message || "Could not load voters", { persist: true });
+          setMessage(err.response?.data?.message || "Could not load voters", {
+            persist: true,
+          });
         }
       })
       .finally(() => setLoadingVoters(false));
@@ -78,7 +85,9 @@ export default function AdminDashboard() {
       notifyAuthChange();
       setLoggedIn(true);
     } catch (err) {
-      setMessage(err.response?.data?.message || "Login failed", { persist: true });
+      setMessage(err.response?.data?.message || "Login failed", {
+        persist: true,
+      });
     } finally {
       setLoginLoading(false);
     }
@@ -100,9 +109,13 @@ export default function AdminDashboard() {
     } catch (err) {
       if (err.response?.status === 401) {
         setLoggedIn(false);
-        setMessage("Your session has expired. Please log in again.", { persist: true });
+        setMessage("Your session has expired. Please log in again.", {
+          persist: true,
+        });
       } else {
-        setMessage(err.response?.data?.message || "Could not verify voter", { persist: true });
+        setMessage(err.response?.data?.message || "Could not verify voter", {
+          persist: true,
+        });
       }
     }
   };
@@ -120,9 +133,13 @@ export default function AdminDashboard() {
     } catch (err) {
       if (err.response?.status === 401) {
         setLoggedIn(false);
-        setMessage("Your session has expired. Please log in again.", { persist: true });
+        setMessage("Your session has expired. Please log in again.", {
+          persist: true,
+        });
       } else {
-        setMessage(err.response?.data?.message || "Failed to add candidate", { persist: true });
+        setMessage(err.response?.data?.message || "Failed to add candidate", {
+          persist: true,
+        });
       }
     } finally {
       setAddingCandidate(false);
@@ -141,7 +158,11 @@ export default function AdminDashboard() {
               </span>
               <h2 className="text-lg font-bold text-ink-900">Admin Login</h2>
             </div>
-            <form onSubmit={handleLogin} className="flex flex-col gap-4" noValidate>
+            <form
+              onSubmit={handleLogin}
+              className="flex flex-col gap-4"
+              noValidate
+            >
               <TextInput
                 name="email"
                 type="email"
@@ -155,7 +176,9 @@ export default function AdminDashboard() {
                 touched={login.touched.email}
               />
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-600">Password</label>
+                <label className="mb-1 block text-xs font-semibold text-slate-600">
+                  Password
+                </label>
                 <div className="relative">
                   <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
@@ -177,14 +200,24 @@ export default function AdminDashboard() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                     tabIndex={-1}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 {login.touched.password && login.errors.password && (
-                  <p className="mt-1 text-xs font-medium text-rose-600">{login.errors.password}</p>
+                  <p className="mt-1 text-xs font-medium text-rose-600">
+                    {login.errors.password}
+                  </p>
                 )}
               </div>
-              <button type="submit" disabled={loginLoading} className="btn-primary">
+              <button
+                type="submit"
+                disabled={loginLoading}
+                className="btn-primary"
+              >
                 {loginLoading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {loginLoading ? "Logging in…" : "Login"}
               </button>
@@ -205,7 +238,8 @@ export default function AdminDashboard() {
           <h1 className="text-xl font-bold text-ink-900">Admin Dashboard</h1>
           <p className="flex items-center gap-1.5 text-sm text-slate-500">
             <Users className="h-3.5 w-3.5" />
-            {voters.length} registered voter{voters.length !== 1 && "s"} · {pendingCount} pending verification
+            {voters.length} registered voter{voters.length !== 1 && "s"} ·{" "}
+            {pendingCount} pending verification
           </p>
         </div>
         <button onClick={handleLogout} className="btn-secondary">
@@ -229,7 +263,12 @@ export default function AdminDashboard() {
             </span>
             <h3 className="text-sm font-bold text-ink-900">Add Candidate</h3>
           </div>
-          <form key={candidateFormVersion} onSubmit={handleAddCandidate} className="flex flex-col gap-3" noValidate>
+          <form
+            key={candidateFormVersion}
+            onSubmit={handleAddCandidate}
+            className="flex flex-col gap-3"
+            noValidate
+          >
             <TextInput
               name="name"
               label="Name"
@@ -251,6 +290,16 @@ export default function AdminDashboard() {
               touched={candidate.touched.party}
             />
             <TextInput
+              name="symbol"
+              label="Symbol"
+              placeholder="e.g. Lotus, Hand, Star"
+              value={candidate.values.symbol}
+              onChange={candidate.handleChange}
+              onBlur={candidate.handleBlur}
+              error={candidate.errors.symbol}
+              touched={candidate.touched.symbol}
+            />
+            <TextInput
               name="constituency"
               label="Constituency"
               placeholder="Constituency"
@@ -260,7 +309,11 @@ export default function AdminDashboard() {
               error={candidate.errors.constituency}
               touched={candidate.touched.constituency}
             />
-            <button type="submit" disabled={addingCandidate} className="btn-primary">
+            <button
+              type="submit"
+              disabled={addingCandidate}
+              className="btn-primary"
+            >
               {addingCandidate && <Loader2 className="h-4 w-4 animate-spin" />}
               {addingCandidate ? "Adding…" : "Add Candidate"}
             </button>
@@ -273,7 +326,9 @@ export default function AdminDashboard() {
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
               <UserCheck className="h-4 w-4" />
             </span>
-            <h3 className="text-sm font-bold text-ink-900">Voter Verifications</h3>
+            <h3 className="text-sm font-bold text-ink-900">
+              Voter Verifications
+            </h3>
           </div>
           <div className="flex max-h-[28rem] flex-col gap-3 overflow-y-auto pr-1">
             {loadingVoters ? (
@@ -292,21 +347,31 @@ export default function AdminDashboard() {
                 >
                   <div>
                     <p className="font-semibold text-ink-900">
-                      {v.fullName} <span className="font-normal text-slate-500">({v.voterId})</span>
+                      {v.fullName}{" "}
+                      <span className="font-normal text-slate-500">
+                        ({v.voterId})
+                      </span>
                     </p>
                     <p className="text-xs text-slate-500">{v.constituency}</p>
                     <div className="mt-1 flex gap-1.5">
-                      <span className={v.isVerified ? "badge-green" : "badge-amber"}>
+                      <span
+                        className={v.isVerified ? "badge-green" : "badge-amber"}
+                      >
                         {v.isVerified ? "Verified" : "Pending"}
                       </span>
-                      <span className={v.hasVoted ? "badge-green" : "badge-slate"}>
+                      <span
+                        className={v.hasVoted ? "badge-green" : "badge-slate"}
+                      >
                         {v.hasVoted && <VoteIcon className="h-3 w-3" />}
                         {v.hasVoted ? "Voted" : "Not voted"}
                       </span>
                     </div>
                   </div>
                   {!v.isVerified && (
-                    <button onClick={() => handleVerify(v._id)} className="btn-secondary">
+                    <button
+                      onClick={() => handleVerify(v._id)}
+                      className="btn-secondary"
+                    >
                       <UserCheck className="h-4 w-4" />
                       Verify
                     </button>

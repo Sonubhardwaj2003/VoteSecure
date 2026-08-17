@@ -4,7 +4,7 @@ const candidateSchema = new mongoose.Schema(
   {
     name: { type: String, required: true, trim: true },
     party: { type: String, required: true, trim: true },
-    symbol: { type: String, default: "" }, // URL/text of party symbol
+    symbol: { type: String, required: true, trim: true }, // e.g. "Lotus", "Hand", "Star"
     constituency: { type: String, required: true, trim: true },
     voteCount: { type: Number, default: 0 },
   },

@@ -101,6 +101,7 @@ export default function Vote() {
                     <div>
                       <p className="font-semibold text-ink-900">{c.name}</p>
                       <p className="text-sm text-slate-500">{c.party}</p>
+                      <p className="text-xs font-medium text-brand-600">Symbol: {c.symbol}</p>
                     </div>
                   </div>
                   <button
