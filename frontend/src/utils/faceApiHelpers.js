@@ -61,18 +61,18 @@ export const detectFaceFromVideo = async (video) => {
   };
 };
 
-// Lightweight version used for the liveness/blink polling loop: skips the
-// expensive descriptor computation entirely (we only need eye landmarks
-// here) and uses a smaller detector input size for faster inference. This
-// is what makes blink detection feel near-instant instead of laggy.
-export const detectLandmarksFromVideo = async (videoEl) => {
-  const detection = await faceapi
-    .detectSingleFace(videoEl, new faceapi.TinyFaceDetectorOptions({ inputSize: 224 }))
+// Lightweight, continuous polling detector — runs every ~120ms while the
+// camera preview is live. Detects ALL faces (not just one) so we can show
+// a real-time face-count status, not just check once at capture time.
+export const detectLiveFaceStatus = async (video) => {
+  const detections = await faceapi
+    .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 224, scoreThreshold: 0.5 }))
     .withFaceLandmarks();
 
-  if (!detection) return null;
-
-  return { landmarks: detection.landmarks };
+  return {
+    count: detections.length,
+    landmarks: detections.length === 1 ? detections[0].landmarks : null,
+  };
 };
 
 // --- Basic liveness: Eye Aspect Ratio (EAR) based blink detection ---
