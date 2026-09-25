@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreditCard, KeyRound, ScanFace, Loader2 } from "lucide-react";
+import { CreditCard, KeyRound,Loader2 } from "lucide-react";
 import FaceCapture from "../components/FaceCapture";
 import TextInput from "../components/TextInput";
 import Alert from "../components/Alert";
