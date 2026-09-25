@@ -1,5 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+  <script>
+  (function () {
+    try {
+      var t = localStorage.getItem("vs-theme") || "system";
+      var isDark = t === "dark" || (t === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      if (isDark) document.documentElement.classList.add("dark");
+    } catch (e) {}
+  })();
+</script>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,7 +23,7 @@
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/apple-touch-icon.png" />
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-    <title>VoteSecure — Face-Verified Online Voting</title>
+    <title>VoteSecure</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
