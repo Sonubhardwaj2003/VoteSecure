@@ -24,7 +24,7 @@ export default function Results() {
   const leaderVotes = data.candidates[0]?.voteCount || 0;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
       <div className="card animate-fade-in">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
