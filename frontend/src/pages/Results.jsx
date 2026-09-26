@@ -32,8 +32,8 @@ export default function Results() {
               <BarChart3 className="h-5 w-5" />
             </span>
             <div>
-              <h2 className="text-lg font-bold text-ink-900">Live Results</h2>
-              <p className="text-xs text-slate-500">Auto-refreshes every 5 seconds</p>
+              <h2 className="text-lg font-bold text-ink-900 dark:text-white">Live Results</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Auto-refreshes every 5 seconds</p>
             </div>
           </div>
           <span className="badge-slate">Total votes: {data.totalVotes}</span>
@@ -53,7 +53,7 @@ export default function Results() {
               <Loader2 className="h-6 w-6 animate-spin text-brand-600" />
             </div>
           ) : data.candidates.length === 0 ? (
-            <p className="rounded-lg bg-slate-50 py-6 text-center text-sm text-slate-500">
+            <p className="rounded-lg bg-slate-50 py-6 text-center text-sm text-slate-500 dark:bg-slate-800/50 dark:text-slate-400 dark:text-slate-400">
               No results to show yet.
             </p>
           ) : (
@@ -64,7 +64,9 @@ export default function Results() {
                 <div
                   key={c._id}
                   className={`card-hover rounded-xl border p-4 ${
-                    isLeader ? "border-amber-200 bg-gradient-to-r from-amber-50/60 to-white" : "border-slate-200"
+                    isLeader
+                      ? "border-amber-200 bg-gradient-to-r from-amber-50/60 to-white dark:border-amber-700/50 dark:from-amber-900/20 dark:to-transparent"
+                      : "border-slate-200 dark:border-slate-700"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-3">
@@ -74,13 +76,13 @@ export default function Results() {
                           <Trophy className="h-3 w-3" /> Leading
                         </span>
                       )}
-                      <p className="font-semibold text-ink-900">
-                        {c.name} <span className="font-normal text-slate-500">({c.party} · {c.symbol})</span>
+                      <p className="font-semibold text-ink-900 dark:text-white">
+                        {c.name} <span className="font-normal text-slate-500 dark:text-slate-400">({c.party} · {c.symbol})</span>
                       </p>
                     </div>
                     <span className="text-sm font-bold text-brand-700">{c.voteCount} votes</span>
                   </div>
-                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-700">
                     <div
                       className={`h-full rounded-full transition-all duration-500 ${
                         isLeader ? "bg-gradient-to-r from-amber-400 to-amber-500" : "bg-brand-600"

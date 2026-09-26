@@ -34,7 +34,7 @@ export default function Vote() {
   if (!voter) {
     return (
       <div className="mx-auto max-w-md px-4 py-16 text-center sm:px-6">
-        <p className="text-slate-600">
+        <p className="text-slate-600 dark:text-slate-300">
           {localStorage.getItem("adminToken")
             ? "Admin accounts don't have a voter identity to cast a ballot with — this view is for registered voters only."
             : "Please log in first to view and cast your vote."}
@@ -65,10 +65,10 @@ export default function Vote() {
       <div className="card animate-fade-in">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h2 className="text-lg font-bold text-ink-900">
+            <h2 className="text-lg font-bold text-ink-900 dark:text-white">
               Welcome, {voter.fullName}
             </h2>
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Constituency: {voter.constituency}
             </p>
           </div>
@@ -92,15 +92,15 @@ export default function Vote() {
               {candidates.map((c) => (
                 <div
                   key={c._id}
-                  className="card-hover flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-4"
+                  className="card-hover flex items-center justify-between gap-3 rounded-xl border border-slate-200 p-4 dark:border-slate-700"
                 >
                   <div className="flex items-center gap-3">
                     <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-100 to-brand-200 text-sm font-bold text-brand-700">
                       {c.name?.[0]?.toUpperCase() || "?"}
                     </span>
                     <div>
-                      <p className="font-semibold text-ink-900">{c.name}</p>
-                      <p className="text-sm text-slate-500">{c.party}</p>
+                      <p className="font-semibold text-ink-900 dark:text-white">{c.name}</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">{c.party}</p>
                       <p className="text-xs font-medium text-brand-600">Symbol: {c.symbol}</p>
                     </div>
                   </div>
@@ -119,7 +119,7 @@ export default function Vote() {
                 </div>
               ))}
               {candidates.length === 0 && (
-                <p className="rounded-lg bg-slate-50 py-6 text-center text-sm text-slate-500">
+                <p className="rounded-lg bg-slate-50 py-6 text-center text-sm text-slate-500 dark:bg-slate-800/50 dark:text-slate-400 dark:text-slate-400">
                   No candidates found for your constituency yet.
                 </p>
               )}

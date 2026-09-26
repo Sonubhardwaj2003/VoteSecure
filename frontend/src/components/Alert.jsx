@@ -13,9 +13,9 @@ function inferTone(text = "") {
 }
 
 const styles = {
-  success: "border-emerald-200 bg-emerald-50 text-emerald-800",
-  error: "border-rose-200 bg-rose-50 text-rose-800",
-  info: "border-brand-200 bg-brand-50 text-brand-800",
+  success: "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-800/50 dark:bg-emerald-900/20 dark:text-emerald-300",
+  error: "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-800/50 dark:bg-rose-900/20 dark:text-rose-300",
+  info: "border-brand-200 bg-brand-50 text-brand-800 dark:border-brand-800/50 dark:bg-brand-900/20 dark:text-brand-300",
 };
 
 const icons = {

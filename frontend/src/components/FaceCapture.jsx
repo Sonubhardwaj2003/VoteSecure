@@ -129,7 +129,7 @@ export default function FaceCapture({ onCapture, buttonLabel = "Capture Face" })
   }
 
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100 p-4">
+    <div className="flex flex-col items-center gap-3 rounded-xl border border-slate-200 bg-gradient-to-b from-slate-50 to-slate-100 p-4 dark:border-slate-700 dark:from-slate-800 dark:to-slate-900">
       <div className="relative">
         <div
           className={`absolute -inset-1 rounded-xl bg-gradient-to-br from-brand-400 to-brand-600 opacity-0 blur transition-opacity duration-500 ${
@@ -178,12 +178,12 @@ export default function FaceCapture({ onCapture, buttonLabel = "Capture Face" })
         <p
           className={`flex items-center gap-1.5 text-sm font-medium ${
             liveTone === "error"
-              ? "text-rose-600"
+              ? "text-rose-600 dark:text-rose-400"
               : liveTone === "warn"
-              ? "text-amber-600"
+              ? "text-amber-600 dark:text-amber-400"
               : liveTone === "success"
-              ? "text-emerald-600"
-              : "text-slate-500"
+              ? "text-emerald-600 dark:text-emerald-400"
+              : "text-slate-500 dark:text-slate-400"
           }`}
         >
           {liveTone === "error" || liveTone === "warn" ? (

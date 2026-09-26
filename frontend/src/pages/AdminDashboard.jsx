@@ -156,7 +156,7 @@ export default function AdminDashboard() {
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-ink-800 to-ink-900 text-white shadow-sm">
                 <ShieldCheck className="h-5 w-5" />
               </span>
-              <h2 className="text-lg font-bold text-ink-900">Admin Login</h2>
+              <h2 className="text-lg font-bold text-ink-900 dark:text-white">Admin Login</h2>
             </div>
             <form
               onSubmit={handleLogin}
@@ -176,11 +176,11 @@ export default function AdminDashboard() {
                 touched={login.touched.email}
               />
               <div>
-                <label className="mb-1 block text-xs font-semibold text-slate-600">
+                <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-300">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                   <input
                     name="password"
                     type={showPassword ? "text" : "password"}
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
                     tabIndex={-1}
                   >
                     {showPassword ? (
@@ -235,8 +235,8 @@ export default function AdminDashboard() {
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-ink-900">Admin Dashboard</h1>
-          <p className="flex items-center gap-1.5 text-sm text-slate-500">
+          <h1 className="text-xl font-bold text-ink-900 dark:text-white">Admin Dashboard</h1>
+          <p className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
             <Users className="h-3.5 w-3.5" />
             {voters.length} registered voter{voters.length !== 1 && "s"} ·{" "}
             {pendingCount} pending verification
@@ -261,7 +261,7 @@ export default function AdminDashboard() {
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
               <PlusCircle className="h-4 w-4" />
             </span>
-            <h3 className="text-sm font-bold text-ink-900">Add Candidate</h3>
+            <h3 className="text-sm font-bold text-ink-900 dark:text-white">Add Candidate</h3>
           </div>
           <form
             key={candidateFormVersion}
@@ -326,7 +326,7 @@ export default function AdminDashboard() {
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-100 text-brand-700">
               <UserCheck className="h-4 w-4" />
             </span>
-            <h3 className="text-sm font-bold text-ink-900">
+            <h3 className="text-sm font-bold text-ink-900 dark:text-white">
               Voter Verifications
             </h3>
           </div>
@@ -336,23 +336,23 @@ export default function AdminDashboard() {
                 <Loader2 className="h-6 w-6 animate-spin text-brand-600" />
               </div>
             ) : voters.length === 0 ? (
-              <p className="rounded-lg bg-slate-50 py-6 text-center text-sm text-slate-500">
+              <p className="rounded-lg bg-slate-50 py-6 text-center text-sm text-slate-500 dark:bg-slate-800/50 dark:text-slate-400 dark:text-slate-400">
                 No voters registered yet.
               </p>
             ) : (
               voters.map((v) => (
                 <div
                   key={v._id}
-                  className="card-hover flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 p-3"
+                  className="card-hover flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 p-3 dark:border-slate-700"
                 >
                   <div>
-                    <p className="font-semibold text-ink-900">
+                    <p className="font-semibold text-ink-900 dark:text-white">
                       {v.fullName}{" "}
-                      <span className="font-normal text-slate-500">
+                      <span className="font-normal text-slate-500 dark:text-slate-400">
                         ({v.voterId})
                       </span>
                     </p>
-                    <p className="text-xs text-slate-500">{v.constituency}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{v.constituency}</p>
                     <div className="mt-1 flex gap-1.5">
                       <span
                         className={v.isVerified ? "badge-green" : "badge-amber"}
